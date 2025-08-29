@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import { Outfit } from 'next/font/google'
 import './globals.css'
-import { ClerkProvider } from './services/clerk/components/ClerkProvider'
 import { ThemeProvider } from 'next-themes'
+import { ClerkProvider } from '@/services/clerk/components/ClerkProvider'
 
 const outfitSans = Outfit({
   variable: '--font-outfit-sans',
