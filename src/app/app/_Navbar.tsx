@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { SignOutButton, useClerk } from '@clerk/nextjs'
 import { BrainCircuitIcon, LogOut, User } from 'lucide-react'
 import { ThemeToggle } from '@/components/ThemeToggle'
-import { UserAvatar } from '@/components/UserAvatar'
+import { UserAvatar } from '@/features/users/components/UserAvatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
