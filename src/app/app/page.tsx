@@ -1,11 +1,13 @@
-import { db } from '@/drizzle/db'
-import { JobInfoTable } from '@/drizzle/schema'
-import { getJobInfoUserTag } from '@/features/jobInfos/dbCache'
-import { getCurrentUser } from '@/services/clerk/lib/getCurrentUser'
+import { Suspense } from 'react'
 import { desc, eq } from 'drizzle-orm'
 import { Loader2Icon } from 'lucide-react'
 import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
-import { Suspense } from 'react'
+import { db } from '@/drizzle/db'
+import { JobInfoTable } from '@/drizzle/schema'
+import { JobInfoForm } from '@/features/jobInfos/components/JobInfoForm'
+import { getJobInfoUserTag } from '@/features/jobInfos/dbCache'
+import { Card, CardContent } from '@/components/ui/card'
+import { getCurrentUser } from '@/services/clerk/lib/getCurrentUser'
 
 export default function AppPage() {
   return (
@@ -20,6 +22,7 @@ export default function AppPage() {
     </Suspense>
   )
 }
+
 async function JobInfos() {
   const { userId, redirectToSignIn } = await getCurrentUser()
 
@@ -28,6 +31,8 @@ async function JobInfos() {
   const jobInfos = await getJobInfos(userId)
 
   if (jobInfos.length === 0) return <NoJobInfos />
+
+  return null
 }
 
 function NoJobInfos() {
@@ -43,6 +48,11 @@ function NoJobInfos() {
         work in. The more specific you are in the description, the closer the
         test interviews will be to the real thing.
       </p>
+      <Card>
+        <CardContent>
+          <JobInfoForm />
+        </CardContent>
+      </Card>
     </div>
   )
 }
