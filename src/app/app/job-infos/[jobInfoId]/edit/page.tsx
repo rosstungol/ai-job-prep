@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
 import { Suspense } from 'react'
-import { Loader2 } from 'lucide-react'
+import { Loader2Icon } from 'lucide-react'
 import { and, eq } from 'drizzle-orm'
 import { db } from '@/drizzle/db'
 import { Card, CardContent } from '@/components/ui/card'
@@ -26,7 +26,9 @@ export default async function JobInfoEditPage({
 
       <Card>
         <CardContent>
-          <Suspense fallback={<Loader2 className='size-24 animate-spin' />}>
+          <Suspense
+            fallback={<Loader2Icon className='size-24 animate-spin mx-auto' />}
+          >
             <SuspendedForm jobInfoId={jobInfoId} />
           </Suspense>
         </CardContent>
