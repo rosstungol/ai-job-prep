@@ -38,7 +38,7 @@ async function SuspendedPage({ jobInfoId }: { jobInfoId: string }) {
   const interviews = await getInterviews(jobInfoId, userId)
 
   if (interviews.length === 0) {
-    return redirect(`/job-infos/${jobInfoId}/interviews/new`)
+    return redirect(`/app/job-infos/${jobInfoId}/interviews/new`)
   }
 
   return <div>Interviews for Job Info Id: {jobInfoId}</div>
