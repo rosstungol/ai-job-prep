@@ -1,10 +1,13 @@
 'use client'
 
+import { useMemo } from 'react'
 import { Loader2Icon, MicIcon, MicOffIcon, PhoneOffIcon } from 'lucide-react'
 import { useVoice, VoiceReadyState } from '@humeai/voice-react'
 import { env } from '@/data/env/client'
 import { JobInfoTable } from '@/drizzle/schema'
 import { Button } from '@/components/ui/button'
+import { condensedChatMessages } from '@/services/hume/lib/condensedChatMessages'
+import { CondensedMessages } from '@/services/hume/components/CondensedMessages'
 
 export function StartCall({
   accessToken,
@@ -64,7 +67,7 @@ export function StartCall({
 
   return (
     <div className='overflow-y-auto h-screen-header flex flex-col-reverse'>
-      <div className='container py-6 flex flex-col items-center justify-end'>
+      <div className='container py-6 flex flex-col items-center justify-end gap-4'>
         <Messages user={user} />
         <Controls />
       </div>
@@ -80,7 +83,20 @@ function Messages({
     imageUrl: string
   }
 }) {
-  return null
+  const { messages, fft } = useVoice()
+
+  const condensedMessages = useMemo(() => {
+    return condensedChatMessages(messages)
+  }, [messages])
+
+  return (
+    <CondensedMessages
+      messages={condensedMessages}
+      user={user}
+      maxFft={Math.max(...fft)}
+      className='max-w-5xl'
+    />
+  )
 }
 
 function Controls() {
