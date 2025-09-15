@@ -1,0 +1,51 @@
+'use server'
+
+import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
+import { and, eq } from 'drizzle-orm'
+import { db } from '@/drizzle/db'
+import { insertInterview } from './db'
+import { JobInfoTable } from '@/drizzle/schema'
+import { getJobInfoIdTag } from '../jobInfos/dbCache'
+import { getCurrentUser } from '@/services/clerk/lib/getCurrentUser'
+
+export async function createInterview({
+  jobInfoId,
+}: {
+  jobInfoId: string
+}): Promise<{ error: true; message: string } | { error: false; id: string }> {
+  const { userId } = await getCurrentUser()
+
+  if (userId == null) {
+    return {
+      error: true,
+      message: "You don't have permission to do this.",
+    }
+  }
+
+  // permissions
+  // rate limit
+
+  const jobInfo = await getJobInfo(jobInfoId, userId)
+  if (jobInfo == null) {
+    return {
+      error: true,
+      message: "You don't have permission to do this.",
+    }
+  }
+
+  const interview = await insertInterview({ jobInfoId, duration: '00:00:00' })
+
+  return {
+    error: false,
+    id: interview.id,
+  }
+}
+
+async function getJobInfo(id: string, userId: string) {
+  'use cache'
+  cacheTag(getJobInfoIdTag(id))
+
+  return db.query.JobInfoTable.findFirst({
+    where: and(eq(JobInfoTable.id, id), eq(JobInfoTable.userId, userId)),
+  })
+}
