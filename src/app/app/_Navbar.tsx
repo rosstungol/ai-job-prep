@@ -1,16 +1,43 @@
 'use client'
 
 import Link from 'next/link'
+import { useParams, usePathname } from 'next/navigation'
 import { SignOutButton, useClerk } from '@clerk/nextjs'
-import { BrainCircuitIcon, LogOut, User } from 'lucide-react'
-import { ThemeToggle } from '@/components/ThemeToggle'
-import { UserAvatar } from '@/features/users/components/UserAvatar'
+import {
+  BookOpenIcon,
+  BrainCircuitIcon,
+  FileSlidersIcon,
+  LogOut,
+  SpeechIcon,
+  User,
+} from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { UserAvatar } from '@/features/users/components/UserAvatar'
+import { ThemeToggle } from '@/components/ThemeToggle'
+import { Button } from '@/components/ui/button'
+
+const navLinks = [
+  {
+    name: 'Interviews',
+    href: 'interviews',
+    Icon: SpeechIcon,
+  },
+  {
+    name: 'Questions',
+    href: 'questions',
+    Icon: BookOpenIcon,
+  },
+  {
+    name: 'Resume',
+    href: 'resume',
+    Icon: FileSlidersIcon,
+  },
+]
 
 export default function Navbar({
   user,
@@ -18,6 +45,8 @@ export default function Navbar({
   user: { name: string; imageUrl: string }
 }) {
   const { openUserProfile } = useClerk()
+  const { jobInfoId } = useParams()
+  const pathName = usePathname()
 
   return (
     <nav className='h-header border-b'>
@@ -27,6 +56,24 @@ export default function Navbar({
           <span className='text-xl font-bold'>Landr</span>
         </Link>
         <div className='flex items-center gap-4'>
+          {typeof jobInfoId === 'string' &&
+            navLinks.map(({ name, href, Icon }) => {
+              const hrefPath = `/app/job-infos/${jobInfoId}/${href}`
+
+              return (
+                <Button
+                  variant={pathName === hrefPath ? 'secondary' : 'ghost'}
+                  key={name}
+                  asChild
+                  className='cursor-pointer max-sm:hidden'
+                >
+                  <Link href={hrefPath}>
+                    <Icon />
+                    {name}
+                  </Link>
+                </Button>
+              )
+            })}
           <ThemeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
