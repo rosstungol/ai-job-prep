@@ -1,11 +1,14 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useRouter } from 'next/navigation'
+import { useMemo, useState, useEffect, useRef } from 'react'
 import { Loader2Icon, MicIcon, MicOffIcon, PhoneOffIcon } from 'lucide-react'
 import { useVoice, VoiceReadyState } from '@humeai/voice-react'
 import { env } from '@/data/env/client'
 import { JobInfoTable } from '@/drizzle/schema'
 import { Button } from '@/components/ui/button'
+import { createInterview, updateInterview } from '@/features/interviews/actions'
+import { errorToast } from '@/lib/errorToast'
 import { condensedChatMessages } from '@/services/hume/lib/condensedChatMessages'
 import { CondensedMessages } from '@/services/hume/components/CondensedMessages'
 
@@ -24,7 +27,48 @@ export function StartCall({
     imageUrl: string
   }
 }) {
-  const { connect, readyState, disconnect } = useVoice()
+  const { connect, readyState, chatMetadata, callDurationTimestamp } =
+    useVoice()
+  const [interviewId, setInterviewId] = useState<string | null>(null)
+  const router = useRouter()
+  const durationRef = useRef(callDurationTimestamp)
+
+  durationRef.current = callDurationTimestamp
+
+  // sync chat id
+  useEffect(() => {
+    if (chatMetadata?.chatId == null || interviewId == null) {
+      return
+    }
+
+    updateInterview(interviewId, { humeChatId: chatMetadata.chatId })
+  }, [chatMetadata?.chatId, interviewId])
+
+  // sync duration
+  useEffect(() => {
+    if (interviewId == null) return
+
+    const intervalId = setInterval(() => {
+      if (durationRef.current == null) return
+
+      updateInterview(interviewId, { duration: durationRef.current })
+    }, 10000)
+
+    return () => clearInterval(intervalId)
+  }, [chatMetadata?.chatId, interviewId])
+
+  // handle disconnect
+  useEffect(() => {
+    if (readyState !== VoiceReadyState.CLOSED) return
+    if (interviewId == null) {
+      return router.push(`/app/job-infos/${jobInfo.id}/interviews`)
+    }
+    if (durationRef.current != null) {
+      updateInterview(interviewId, { duration: durationRef.current })
+    }
+
+    router.push(`/app/job-infos/${jobInfo.id}/interviews/${interviewId}`)
+  }, [interviewId, readyState, router, jobInfo.id])
 
   if (readyState === VoiceReadyState.IDLE) {
     return (
@@ -32,7 +76,15 @@ export function StartCall({
         <Button
           size='lg'
           onClick={async () => {
-            // connect
+            // create interview
+            const res = await createInterview({ jobInfoId: jobInfo.id })
+
+            if (res.error) {
+              return errorToast(res.message)
+            }
+
+            setInterviewId(res.id)
+
             connect({
               auth: { type: 'accessToken', value: accessToken },
               configId: env.NEXT_PUBLIC_HUME_CONFIG_ID,
