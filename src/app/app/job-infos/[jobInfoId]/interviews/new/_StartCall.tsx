@@ -9,8 +9,8 @@ import { JobInfoTable } from '@/drizzle/schema'
 import { Button } from '@/components/ui/button'
 import { createInterview, updateInterview } from '@/features/interviews/actions'
 import { errorToast } from '@/lib/errorToast'
-import { condensedChatMessages } from '@/services/hume/lib/condensedChatMessages'
 import { CondensedMessages } from '@/services/hume/components/CondensedMessages'
+import { condenseChatMessages } from '@/services/hume/lib/condenseChatMessages'
 
 export function StartCall({
   accessToken,
@@ -35,7 +35,7 @@ export function StartCall({
 
   durationRef.current = callDurationTimestamp
 
-  // sync chat id
+  // Sync chat id
   useEffect(() => {
     if (chatMetadata?.chatId == null || interviewId == null) {
       return
@@ -44,7 +44,7 @@ export function StartCall({
     updateInterview(interviewId, { humeChatId: chatMetadata.chatId })
   }, [chatMetadata?.chatId, interviewId])
 
-  // sync duration
+  // Sync duration
   useEffect(() => {
     if (interviewId == null) return
 
@@ -57,7 +57,7 @@ export function StartCall({
     return () => clearInterval(intervalId)
   }, [chatMetadata?.chatId, interviewId])
 
-  // handle disconnect
+  // Handle disconnect
   useEffect(() => {
     if (readyState !== VoiceReadyState.CLOSED) return
     if (interviewId == null) {
@@ -76,7 +76,7 @@ export function StartCall({
         <Button
           size='lg'
           onClick={async () => {
-            // create interview
+            // Create interview
             const res = await createInterview({ jobInfoId: jobInfo.id })
 
             if (res.error) {
@@ -138,7 +138,7 @@ function Messages({
   const { messages, fft } = useVoice()
 
   const condensedMessages = useMemo(() => {
-    return condensedChatMessages(messages)
+    return condenseChatMessages(messages)
   }, [messages])
 
   return (
