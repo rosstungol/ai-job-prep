@@ -1,11 +1,15 @@
 import { Suspense } from 'react'
-import { eq } from 'drizzle-orm'
-import { cn } from '@/lib/utils'
-import { db } from '@/drizzle/db'
-import { getJobInfoIdTag } from '../dbCache'
-import { JobInfoTable } from '@/drizzle/schema'
-import { BackLink } from '@/components/BackLink'
+
 import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
+
+import { eq } from 'drizzle-orm'
+
+import { BackLink } from '@/components/BackLink'
+import { db } from '@/drizzle/db'
+import { JobInfoTable } from '@/drizzle/schema'
+import { cn } from '@/lib/utils'
+
+import { getJobInfoIdTag } from '../dbCache'
 
 export function JobInfoBackLink({
   jobInfoId,

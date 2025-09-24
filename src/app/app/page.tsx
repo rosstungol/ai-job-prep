@@ -1,12 +1,13 @@
-import Link from 'next/link'
 import { Suspense } from 'react'
+
+import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
+import Link from 'next/link'
+
 import { desc, eq } from 'drizzle-orm'
 import { ArrowRightIcon, Loader2Icon, PlusIcon } from 'lucide-react'
-import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
-import { db } from '@/drizzle/db'
-import { JobInfoTable } from '@/drizzle/schema'
-import { JobInfoForm } from '@/features/jobInfos/components/JobInfoForm'
-import { getJobInfoUserTag } from '@/features/jobInfos/dbCache'
+
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -14,10 +15,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { getCurrentUser } from '@/services/clerk/lib/getCurrentUser'
+import { db } from '@/drizzle/db'
+import { JobInfoTable } from '@/drizzle/schema'
+import { JobInfoForm } from '@/features/jobInfos/components/JobInfoForm'
+import { getJobInfoUserTag } from '@/features/jobInfos/dbCache'
 import { formatExperienceLevel } from '@/features/jobInfos/lib/formatters'
+import { getCurrentUser } from '@/services/clerk/lib/getCurrentUser'
 
 export default function AppPage() {
   return (

@@ -1,7 +1,9 @@
-import { db } from '@/drizzle/db'
-import { InterviewTable, JobInfoTable } from '@/drizzle/schema'
-import { revalidateInterviewCache } from './dbCache'
 import { eq } from 'drizzle-orm'
+
+import { db } from '@/drizzle/db'
+import { InterviewTable } from '@/drizzle/schema'
+
+import { revalidateInterviewCache } from './dbCache'
 
 export async function insertInterview(
   interview: typeof InterviewTable.$inferInsert

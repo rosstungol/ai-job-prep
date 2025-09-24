@@ -1,8 +1,11 @@
 'use client'
 
-import z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import z from 'zod'
+
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -13,6 +16,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { LoadingSwap } from '@/components/ui/loading-swap'
 import {
   Select,
   SelectContent,
@@ -21,13 +25,11 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { Button } from '@/components/ui/button'
-import { LoadingSwap } from '@/components/ui/loading-swap'
+import { experienceLevels, JobInfoTable } from '@/drizzle/schema'
+
+import { createJobInfo, updateJobInfo } from '../actions'
 import { formatExperienceLevel } from '../lib/formatters'
 import { jobInfoSchema } from '../schema'
-import { experienceLevels, JobInfoTable } from '@/drizzle/schema'
-import { createJobInfo, updateJobInfo } from '../actions'
-import { toast } from 'sonner'
 
 type JobInfoFormData = z.infer<typeof jobInfoSchema>
 

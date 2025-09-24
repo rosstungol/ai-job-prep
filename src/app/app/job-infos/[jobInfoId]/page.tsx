@@ -1,9 +1,14 @@
+import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { ArrowRightIcon } from 'lucide-react'
-import { db } from '@/drizzle/db'
+
 import { and, eq } from 'drizzle-orm'
-import { formatExperienceLevel } from '@/features/jobInfos/lib/formatters'
+import { ArrowRightIcon } from 'lucide-react'
+
+import { BackLink } from '@/components/BackLink'
+import { Skeleton } from '@/components/Skeleton'
+import { SuspendedItem } from '@/components/SuspendedItem'
+import { Badge } from '@/components/ui/badge'
 import {
   Card,
   CardContent,
@@ -11,13 +16,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { BackLink } from '@/components/BackLink'
-import { SuspendedItem } from '@/components/SuspendedItem'
-import { Skeleton } from '@/components/Skeleton'
+import { db } from '@/drizzle/db'
 import { JobInfoTable } from '@/drizzle/schema'
-import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
 import { getJobInfoIdTag } from '@/features/jobInfos/dbCache'
+import { formatExperienceLevel } from '@/features/jobInfos/lib/formatters'
 import { getCurrentUser } from '@/services/clerk/lib/getCurrentUser'
 
 const options = [

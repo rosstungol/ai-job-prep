@@ -1,6 +1,8 @@
 import { relations } from 'drizzle-orm'
 import { pgTable, varchar } from 'drizzle-orm/pg-core'
+
 import { createdAt, updatedAt } from '../schemaHelpers'
+
 import { JobInfoTable } from './jobInfo'
 
 export const UserTable = pgTable('users', {

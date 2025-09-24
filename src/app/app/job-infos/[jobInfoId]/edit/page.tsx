@@ -1,15 +1,18 @@
-import { notFound } from 'next/navigation'
-import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
 import { Suspense } from 'react'
-import { Loader2Icon } from 'lucide-react'
+
+import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
+import { notFound } from 'next/navigation'
+
 import { and, eq } from 'drizzle-orm'
-import { db } from '@/drizzle/db'
+import { Loader2Icon } from 'lucide-react'
+
 import { Card, CardContent } from '@/components/ui/card'
-import { JobInfoForm } from '@/features/jobInfos/components/JobInfoForm'
-import { JobInfoBackLink } from '@/features/jobInfos/components/JobInfoBackLink'
-import { getCurrentUser } from '@/services/clerk/lib/getCurrentUser'
+import { db } from '@/drizzle/db'
 import { JobInfoTable } from '@/drizzle/schema'
+import { JobInfoBackLink } from '@/features/jobInfos/components/JobInfoBackLink'
+import { JobInfoForm } from '@/features/jobInfos/components/JobInfoForm'
 import { getJobInfoIdTag } from '@/features/jobInfos/dbCache'
+import { getCurrentUser } from '@/services/clerk/lib/getCurrentUser'
 
 export default async function JobInfoEditPage({
   params,

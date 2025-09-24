@@ -1,4 +1,5 @@
 import { BrainCircuitIcon } from 'lucide-react'
+
 import { UserAvatar } from '@/features/users/components/UserAvatar'
 import { cn } from '@/lib/utils'
 

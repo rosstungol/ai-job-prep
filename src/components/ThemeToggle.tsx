@@ -1,8 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+
 import { Monitor, Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
+
+import { cn } from '@/lib/utils'
 
 import { Button } from './ui/button'
 import {
@@ -11,7 +14,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu'
-import { cn } from '@/lib/utils'
 
 const themes = [
   {

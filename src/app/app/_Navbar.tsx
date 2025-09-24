@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useParams, usePathname } from 'next/navigation'
+
 import { SignOutButton, useClerk } from '@clerk/nextjs'
 import {
   BookOpenIcon,
@@ -11,6 +12,9 @@ import {
   SpeechIcon,
   User,
 } from 'lucide-react'
+
+import { ThemeToggle } from '@/components/ThemeToggle'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,8 +22,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { UserAvatar } from '@/features/users/components/UserAvatar'
-import { ThemeToggle } from '@/components/ThemeToggle'
-import { Button } from '@/components/ui/button'
 
 const navLinks = [
   {

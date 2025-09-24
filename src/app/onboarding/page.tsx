@@ -1,5 +1,7 @@
-import { getCurrentUser } from '@/services/clerk/lib/getCurrentUser'
 import { redirect } from 'next/navigation'
+
+import { getCurrentUser } from '@/services/clerk/lib/getCurrentUser'
+
 import { OnboardingClient } from './_client'
 
 export default async function OnboardingPage() {
