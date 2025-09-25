@@ -6,12 +6,14 @@ import { and, eq } from 'drizzle-orm'
 
 import { db } from '@/drizzle/db'
 import { InterviewTable, JobInfoTable } from '@/drizzle/schema'
+import { PLAN_LIMIT_MESSAGE } from '@/lib/errorToast'
 import { getCurrentUser } from '@/services/clerk/lib/getCurrentUser'
 
 import { getJobInfoIdTag } from '../jobInfos/dbCache'
 
 import { insertInterview, updateInterview as updateInterviewDB } from './db'
 import { getInterviewIdTag } from './dbCache'
+import { canCreateInterview } from './permissions'
 
 export async function createInterview({
   jobInfoId,
@@ -27,7 +29,14 @@ export async function createInterview({
     }
   }
 
-  // permissions
+  // Permissions
+  if (!(await canCreateInterview())) {
+    return {
+      error: true,
+      message: PLAN_LIMIT_MESSAGE,
+    }
+  }
+
   // rate limit
 
   const jobInfo = await getJobInfo(jobInfoId, userId)

@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 
 import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 
 import { VoiceProvider } from '@humeai/voice-react'
 import { and, eq } from 'drizzle-orm'
@@ -11,6 +11,7 @@ import { Loader2Icon } from 'lucide-react'
 import { env } from '@/data/env/server'
 import { db } from '@/drizzle/db'
 import { JobInfoTable } from '@/drizzle/schema'
+import { canCreateInterview } from '@/features/interviews/permissions'
 import { getJobInfoIdTag } from '@/features/jobInfos/dbCache'
 import { getCurrentUser } from '@/services/clerk/lib/getCurrentUser'
 
@@ -35,12 +36,15 @@ export default async function NewInterviewPage({
     </Suspense>
   )
 }
+
 async function SuspendedComponent({ jobInfoId }: { jobInfoId: string }) {
   const { user, userId, redirectToSignIn } = await getCurrentUser({
     allData: true,
   })
 
   if (user == null || userId == null) return redirectToSignIn()
+
+  if (!(await canCreateInterview())) return redirect('/app/upgrade')
 
   const jobInfo = await getJobInfo(jobInfoId, userId)
 
