@@ -3,11 +3,6 @@ import { Suspense } from 'react'
 import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
 import { notFound } from 'next/navigation'
 
-import {
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from '@radix-ui/react-dialog'
 import { eq } from 'drizzle-orm'
 import { Loader2Icon } from 'lucide-react'
 
@@ -15,10 +10,17 @@ import { BackLink } from '@/components/BackLink'
 import MarkdownRenderer from '@/components/MarkdownRenderer'
 import { Skeleton, SkeletonButton } from '@/components/Skeleton'
 import { SuspendedItem } from '@/components/SuspendedItem'
+import { ActionButton } from '@/components/ui/action-button'
 import { Button } from '@/components/ui/button'
-import { Dialog } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { db } from '@/drizzle/db'
 import { InterviewTable } from '@/drizzle/schema'
+import { generateInterviewFeedback } from '@/features/interviews/actions'
 import { getInterviewIdTag } from '@/features/interviews/dbCache'
 import { getJobInfoIdTag } from '@/features/jobInfos/dbCache'
 import { formatDateTime } from '@/lib/formatters'
@@ -74,13 +76,18 @@ export default async function InterviewPage({
             item={interview}
             fallback={<SkeletonButton className='w-32' />}
             result={(i) =>
-              // feedback
-              i.feedback == null ? null : (
+              i.feedback == null ? (
+                <ActionButton
+                  action={generateInterviewFeedback.bind(null, i.id)}
+                >
+                  Generate Feedback
+                </ActionButton>
+              ) : (
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button>View Feedback</Button>
                   </DialogTrigger>
-                  <DialogContent className='md:max-w-3xl lg:max-w-4xl max-h-[calc(100% - 2rem)] overflow-y-auto flex flex-col'>
+                  <DialogContent className='md:max-w-3xl lg:max-w-4xl max-h-[calc(100%-2rem)] overflow-y-auto flex flex-col'>
                     <DialogTitle>Feedback</DialogTitle>
                     <MarkdownRenderer>{i.feedback}</MarkdownRenderer>
                   </DialogContent>

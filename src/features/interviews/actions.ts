@@ -9,11 +9,12 @@ import { env } from '@/data/env/server'
 import { db } from '@/drizzle/db'
 import { InterviewTable, JobInfoTable } from '@/drizzle/schema'
 import { PLAN_LIMIT_MESSAGE, RATE_LIMIT_MESSAGE } from '@/lib/errorToast'
+import { generateAiInterviewFeedback } from '@/services/ai/interviews'
 import { getCurrentUser } from '@/services/clerk/lib/getCurrentUser'
 
 import { getJobInfoIdTag } from '../jobInfos/dbCache'
 
-import { insertInterview, updateInterview as updateInterviewDB } from './db'
+import { insertInterview, updateInterview as updateInterviewDb } from './db'
 import { getInterviewIdTag } from './dbCache'
 import { canCreateInterview } from './permissions'
 
@@ -107,11 +108,53 @@ export async function updateInterview(
     }
   }
 
-  await updateInterviewDB(id, data)
+  await updateInterviewDb(id, data)
 
   return {
     error: false,
   }
+}
+
+export async function generateInterviewFeedback(interviewId: string) {
+  const { userId, user } = await getCurrentUser({ allData: true })
+  if (userId == null || user == null) {
+    return {
+      error: true,
+      message: "You don't have permission to do this.",
+    }
+  }
+
+  const interview = await getInterview(interviewId, userId)
+  if (interview == null) {
+    return {
+      error: true,
+      message: "You don't have permission to do this.",
+    }
+  }
+
+  if (interview.humeChatId == null) {
+    return {
+      error: true,
+      message: 'Interview has not been completed yet.',
+    }
+  }
+
+  const feedback = await generateAiInterviewFeedback({
+    humeChatId: interview.humeChatId,
+    jobInfo: interview.jobInfo,
+    userName: user.name,
+  })
+
+  if (feedback == null) {
+    return {
+      error: true,
+      message: 'Failed to generate feedback.',
+    }
+  }
+
+  await updateInterviewDb(interviewId, { feedback })
+
+  return { error: false }
 }
 
 async function getJobInfo(id: string, userId: string) {
@@ -134,6 +177,9 @@ async function getInterview(id: string, userId: string) {
         columns: {
           id: true,
           userId: true,
+          description: true,
+          title: true,
+          experienceLevel: true,
         },
       },
     },
