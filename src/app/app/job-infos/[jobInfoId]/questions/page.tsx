@@ -12,6 +12,8 @@ import { getJobInfoIdTag } from '@/features/jobInfos/dbCache'
 import { canCreateQuestion } from '@/features/questions/permissions'
 import { getCurrentUser } from '@/services/clerk/lib/getCurrentUser'
 
+import { NewQuestionClientPage } from './_NewQuestionClientPage'
+
 export default async function QuestionsPage({
   params,
 }: {
@@ -43,7 +45,7 @@ async function SuspendedComponent({ jobInfoId }: { jobInfoId: string }) {
 
   if (jobInfo == null) return notFound()
 
-  return null
+  return <NewQuestionClientPage jobInfo={jobInfo} />
 }
 
 async function getJobInfo(id: string, userId: string) {
