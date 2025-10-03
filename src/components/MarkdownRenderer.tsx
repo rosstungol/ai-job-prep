@@ -4,7 +4,7 @@ import Markdown from 'react-markdown'
 
 import { cn } from '@/lib/utils'
 
-export default function MarkdownRenderer({
+export function MarkdownRenderer({
   className,
   ...props
 }: {
