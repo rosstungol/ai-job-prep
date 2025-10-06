@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { useCompletion } from '@ai-sdk/react'
+import z from 'zod'
 
 import { BackLink } from '@/components/BackLink'
-import MarkdownRenderer from '@/components/MarkdownRenderer'
+import { MarkdownRenderer } from '@/components/MarkdownRenderer'
 import { Button } from '@/components/ui/button'
 import { LoadingSwap } from '@/components/ui/loading-swap'
 import {
@@ -32,7 +33,6 @@ export function NewQuestionClientPage({
 }) {
   const [status, setStatus] = useState<Status>('init')
   const [answer, setAnswer] = useState<string | null>(null)
-  const questionId = null // implement questionId
 
   const {
     complete: generateQuestion,
@@ -65,6 +65,16 @@ export function NewQuestionClientPage({
     },
   })
 
+  const questionId = useMemo(() => {
+    const item = data?.at(-1)
+    if (item == null) return null
+
+    const parsed = z.object({ questionId: z.string() }).safeParse(item)
+    if (!parsed.success) return null
+
+    return parsed.data.questionId
+  }, [data])
+
   return (
     <div className='flex flex-col items-center gap-4 w-full mx-w-[2000px] mx-auto flex-grow h-screen-header'>
       <div className='container flex gap-4 mt-4 items-center justify-between'>
@@ -81,13 +91,14 @@ export function NewQuestionClientPage({
             setAnswer(null)
           }}
           disableAnswerButton={
-            answer == null || answer?.trim() === '' || questionId == null
+            answer == null || answer.trim() === '' || questionId == null
           }
           status={status}
           isLoading={isGeneratingQuestion || isGeneratingFeedback}
           generateFeedback={() => {
             if (answer == null || answer.trim() === '' || questionId == null)
               return
+
             generateFeedback(answer?.trim(), {
               body: { questionId },
             })
@@ -106,6 +117,7 @@ export function NewQuestionClientPage({
         feedback={feedback}
         answer={answer}
         status={status}
+        isLoading={isGeneratingQuestion}
         setAnswer={setAnswer}
       />
     </div>
@@ -117,21 +129,23 @@ function QuestionContainer({
   feedback,
   answer,
   status,
+  isLoading,
   setAnswer,
 }: {
   question: string | null
   feedback: string | null
   answer: string | null
   status: Status
+  isLoading: boolean
   setAnswer: (value: string) => void
 }) {
   return (
     <ResizablePanelGroup direction='horizontal' className='flex-grow border-t'>
       <ResizablePanel id='question-and-feedback' defaultSize={50} minSize={5}>
-        <ResizablePanelGroup direction='vertical' className='flex-grow '>
+        <ResizablePanelGroup direction='vertical' className='flex-grow'>
           <ResizablePanel id='question' defaultSize={25} minSize={5}>
             <ScrollArea className='h-full min-w-48 *:h-full'>
-              {status === 'init' ? (
+              {status === 'init' && !isLoading ? (
                 <p className='text-base md:text-lg flex items-center justify-center h-full p-6'>
                   Get started by selecting a question difficulty above.
                 </p>

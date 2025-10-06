@@ -1,5 +1,6 @@
 import { cacheTag } from 'next/dist/server/use-cache/cache-tag'
 
+import { createDataStreamResponse } from 'ai'
 import { and, asc, eq } from 'drizzle-orm'
 import z from 'zod'
 
@@ -10,6 +11,7 @@ import {
   QuestionTable,
 } from '@/drizzle/schema'
 import { getJobInfoIdTag } from '@/features/jobInfos/dbCache'
+import { insertQuestion } from '@/features/questions/db'
 import { getQuestionJobInfoTag } from '@/features/questions/dbCache'
 import { canCreateQuestion } from '@/features/questions/permissions'
 import { PLAN_LIMIT_MESSAGE } from '@/lib/errorToast'
@@ -52,12 +54,24 @@ export async function POST(req: Request) {
 
   const previousQuestions = await getQuestions(jobInfoId)
 
-  generateAiQuestion({
-    jobInfo,
-    previousQuestions,
-    difficulty,
-    onFinish: async (question) => {
-      console.log(question)
+  return createDataStreamResponse({
+    execute: async (dataStream) => {
+      const res = generateAiQuestion({
+        previousQuestions,
+        jobInfo,
+        difficulty,
+        onFinish: async (question) => {
+          const { id } = await insertQuestion({
+            text: question,
+            jobInfoId,
+            difficulty,
+          })
+
+          dataStream.writeData({ questionId: id })
+        },
+      })
+
+      res.mergeIntoDataStream(dataStream, { sendUsage: false })
     },
   })
 }
