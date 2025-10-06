@@ -7,7 +7,7 @@ import { eq } from 'drizzle-orm'
 import { Loader2Icon } from 'lucide-react'
 
 import { BackLink } from '@/components/BackLink'
-import MarkdownRenderer from '@/components/MarkdownRenderer'
+import { MarkdownRenderer } from '@/components/MarkdownRenderer'
 import { Skeleton, SkeletonButton } from '@/components/Skeleton'
 import { SuspendedItem } from '@/components/SuspendedItem'
 import { ActionButton } from '@/components/ui/action-button'
