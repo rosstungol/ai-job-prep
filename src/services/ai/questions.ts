@@ -1,4 +1,4 @@
-import { ModelMessage, streamText } from 'ai'
+import { CoreMessage, streamText } from 'ai'
 
 import {
   JobInfoTable,
@@ -30,11 +30,13 @@ export function generateAiQuestion({
       [
         { role: 'user', content: q.difficulty },
         { role: 'assistant', content: q.text },
-      ] satisfies ModelMessage[]
+      ] satisfies CoreMessage[]
   )
 
   return streamText({
     model: google('gemini-2.5-flash'),
+    maxSteps: 10,
+    experimental_continueSteps: true,
     onFinish: ({ text }) => onFinish(text),
     messages: [...previousMessages, { role: 'user', content: difficulty }],
     system: `You are an AI assistant that creates technical interview questions tailored to a specific job role. Your task is to generate one **realistic and relevant** technical question that matches the skill requirements of the job and aligns with the difficulty level provided by the user.
