@@ -28,9 +28,7 @@ export async function POST(req: Request) {
   const result = schema.safeParse(body)
 
   if (!result.success) {
-    return new Response('Error generating your question.', {
-      status: 400,
-    })
+    return new Response('Error generating your question.', { status: 400 })
   }
 
   const { prompt: difficulty, jobInfoId } = result.data

@@ -20,9 +20,7 @@ export async function POST(req: Request) {
   const result = schema.safeParse(body)
 
   if (!result.success) {
-    return new Response('Error generating your feedback.', {
-      status: 400,
-    })
+    return new Response('Error generating your feedback.', { status: 400 })
   }
 
   const { prompt: answer, questionId } = result.data

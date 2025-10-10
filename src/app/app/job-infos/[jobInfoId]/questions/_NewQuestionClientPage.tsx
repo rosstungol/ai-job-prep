@@ -98,10 +98,7 @@ export function NewQuestionClientPage({
           generateFeedback={() => {
             if (answer == null || answer.trim() === '' || questionId == null)
               return
-
-            generateFeedback(answer?.trim(), {
-              body: { questionId },
-            })
+            generateFeedback(answer?.trim(), { body: { questionId } })
           }}
           generateQuestion={(difficulty) => {
             setQuestion('')
@@ -180,7 +177,8 @@ function QuestionContainer({
             onChange={(e) => setAnswer(e.target.value)}
             value={answer ?? ''}
             placeholder='Type your answer here...'
-            className='w-full h-full resize-none border-none rounded-none focus-visible:ring focus-visible:ring-inset !text-base p-6'
+            className='w-full h-full resize-none border-none rounded-none 
+            focus-visible:ring focus-visible:ring-inset !text-base p-6'
           />
         </ScrollArea>
       </ResizablePanel>
