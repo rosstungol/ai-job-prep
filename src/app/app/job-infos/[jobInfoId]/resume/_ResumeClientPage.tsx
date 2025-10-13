@@ -15,6 +15,7 @@ import {
 import { LoadingSwap } from '@/components/ui/loading-swap'
 import { errorToast } from '@/lib/errorToast'
 import { cn } from '@/lib/utils'
+import { aiAnalyzeSchema } from '@/services/ai/resumes/schemas'
 
 export function ResumeClientPage({ jobInfoId }: { jobInfoId: string }) {
   const [isDragOver, setIsDragOver] = useState(false)
@@ -25,8 +26,8 @@ export function ResumeClientPage({ jobInfoId }: { jobInfoId: string }) {
     isLoading,
     submit: generateAnalysis,
   } = useObject({
-    api: '/api/resume-analysis',
-    schema: {},
+    api: '/api/ai/resumes/analyze',
+    schema: aiAnalyzeSchema,
     fetch: (url, options) => {
       const headers = new Headers(options?.headers)
       headers.delete('Content-Type')
@@ -34,12 +35,12 @@ export function ResumeClientPage({ jobInfoId }: { jobInfoId: string }) {
       const formData = new FormData()
 
       if (fileRef.current) {
-        formData.append('resume', fileRef.current)
+        formData.append('resumeFile', fileRef.current)
       }
 
       formData.append('jobInfoId', jobInfoId)
 
-      return fetch(url, { ...options, headers })
+      return fetch(url, { ...options, headers, body: formData })
     },
   })
 
@@ -130,6 +131,10 @@ export function ResumeClientPage({ jobInfoId }: { jobInfoId: string }) {
           </LoadingSwap>
         </CardContent>
       </Card>
+
+      <pre>
+        <code>{JSON.stringify(aiAnalysis, null, 2)}</code>
+      </pre>
     </div>
   )
 }
